@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <queue>
 #include <stdlib.h>
@@ -14,11 +15,10 @@ int** createG(int size) {
         for (int j = i; j < size; j++) {
             G[i][j] = rand() % 2;
             if (i == j) G[i][j] = 0;
-            G[i][j] = G[i][j];
-
+            G[j][i] = G[i][j]; // Обеспечение симметричности
         }
-
     }
+    return G;
 }
 // Функция для вывода матрицы смежности
 void printG(int** matrix, int n) {
@@ -37,8 +37,8 @@ void BFS(int** G, int size, int* vis, int s) {
     q.push(s);
     vis[s] = 1;
     while (!q.empty()) {
-        s=q.front();
-        printf("%d", s);
+        s = q.front();
+        printf("%d ", s);
         q.pop();
         for (int i = 0; i < size; i++) {
             if (G[s][i] == 1 && vis[i] == 0) {
@@ -64,21 +64,24 @@ int main() {
     printf("Введите размер матрицы: ");
     scanf("%d", &n);
 
-    // Динамическое выделение памяти для матрицы смежности и массива посещений
-    int** matrix = (int**)malloc(n * sizeof(int*));
-    for (int i = 0; i < n; i++) {
-        matrix[i] = (int*)malloc(n * sizeof(int));
-    }
-    int* vis = (int*)calloc(n, sizeof(int));
+    // Инициализация генератора случайных чисел
+    srand(time(NULL));
 
-    createG(n);
+    // Генерация матрицы смежности
+    int** matrix = createG(n);
+
+    // Динамическое выделение памяти для массива посещений
+    int* vis = (int*)calloc(n, sizeof(int));
+    memset(vis, 0, n * sizeof(int));
+
+    // Вывод матрицы смежности
     printG(matrix, n);
 
     printf("Введите начальную вершину для обхода (от 0 до %d): ", n - 1);
     scanf("%d", &s);
 
     printf("Обход в ширину (BFS) начиная с вершины %d:\n", s);
-    BFS(matrix,vis, s, n);
+    BFS(matrix, n, vis, s);
 
     printVis(vis, n);
 
@@ -90,5 +93,4 @@ int main() {
     free(vis);
 
     return 0;
-
 }
