@@ -1,0 +1,94 @@
+#include <stdio.h>
+#include <queue>
+#include <stdlib.h>
+#include <time.h>
+using namespace std;
+
+int** createG(int size) {
+    int** G = NULL;
+    G = (int**)malloc(size * sizeof(int*));
+    for (int i = 0; i < size; i++) {
+        G[i] = (int*)malloc(size * sizeof(int));
+    }
+    for (int i = 0; i < size; i++) {
+        for (int j = i; j < size; j++) {
+            G[i][j] = rand() % 2;
+            if (i == j) G[i][j] = 0;
+            G[i][j] = G[i][j];
+
+        }
+
+    }
+}
+// Функция для вывода матрицы смежности
+void printG(int** matrix, int n) {
+    printf("Матрица смежности:\n");
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            printf("%d ", matrix[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+// Обход матрицы
+void BFS(int** G, int size, int* vis, int s) {
+    queue <int> q;
+    q.push(s);
+    vis[s] = 1;
+    while (!q.empty()) {
+        s=q.front();
+        printf("%d", s);
+        q.pop();
+        for (int i = 0; i < size; i++) {
+            if (G[s][i] == 1 && vis[i] == 0) {
+                q.push(i);
+                vis[i] = 1;
+            }
+        }
+    }
+}
+
+// Функция для вывода массива посещенных вершин
+void printVis(int* vis, int n) {
+    printf("vis: ");
+    for (int i = 0; i < n; i++) {
+        printf("%d ", vis[i]);
+    }
+    printf("\n");
+}
+
+int main() {
+    int n, s;
+
+    printf("Введите размер матрицы: ");
+    scanf("%d", &n);
+
+    // Динамическое выделение памяти для матрицы смежности и массива посещений
+    int** matrix = (int**)malloc(n * sizeof(int*));
+    for (int i = 0; i < n; i++) {
+        matrix[i] = (int*)malloc(n * sizeof(int));
+    }
+    int* vis = (int*)calloc(n, sizeof(int));
+
+    createG(n);
+    printG(matrix, n);
+
+    printf("Введите начальную вершину для обхода (от 0 до %d): ", n - 1);
+    scanf("%d", &s);
+
+    printf("Обход в ширину (BFS) начиная с вершины %d:\n", s);
+    BFS(matrix,vis, s, n);
+
+    printVis(vis, n);
+
+    // Освобождение выделенной памяти
+    for (int i = 0; i < n; i++) {
+        free(matrix[i]);
+    }
+    free(matrix);
+    free(vis);
+
+    return 0;
+
+}
